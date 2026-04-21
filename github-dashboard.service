@@ -1,0 +1,18 @@
+[Unit]
+Description=GitHub e-paper dashboard
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/git_display
+ExecStart=/usr/bin/python3 /home/pi/git_display/dashboard.py
+Restart=on-failure
+RestartSec=60
+StandardOutput=journal
+StandardError=journal
+ExecStartPre=/bin/sleep 10
+
+[Install]
+WantedBy=multi-user.target
