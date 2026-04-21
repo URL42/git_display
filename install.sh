@@ -3,7 +3,8 @@
 # Run as: bash install.sh
 set -e
 
-INSTALL_DIR="$HOME/github-epaper-dashboard"
+# Derive install dir from wherever this script lives — works for any clone name
+INSTALL_DIR="$(cd "$(dirname "$0")" && pwd)"
 WAVESHARE_DIR="$HOME/waveshare-epd"
 
 echo "────────────────────────────────────────────"
@@ -49,13 +50,19 @@ pip3 install -e \
     "$WAVESHARE_DIR/RaspberryPi_JetsonNano/python/"
 
 # ── 4. Python dependencies ───────────────────────────────────────────────────
+# Pillow / numpy / RPi.GPIO / spidev all arrived via apt above.
+# Only requests needs pip.
 echo "[4/5] Installing Python dependencies…"
-pip3 install --break-system-packages -r "$INSTALL_DIR/requirements.txt" 2>/dev/null || \
-pip3 install -r "$INSTALL_DIR/requirements.txt"
+pip3 install --break-system-packages requests 2>/dev/null || \
+pip3 install requests
 
 # ── 5. Systemd service ───────────────────────────────────────────────────────
 echo "[5/5] Installing systemd service…"
-sudo cp "$INSTALL_DIR/github-dashboard.service" /etc/systemd/system/
+# Patch the service file with the actual install path before copying
+sed \
+    -e "s|/home/pi/github-epaper-dashboard|$INSTALL_DIR|g" \
+    "$INSTALL_DIR/github-dashboard.service" \
+    | sudo tee /etc/systemd/system/github-dashboard.service > /dev/null
 sudo systemctl daemon-reload
 sudo systemctl enable github-dashboard.service
 echo "  → Service installed and enabled (will start on next boot)"
