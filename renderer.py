@@ -30,7 +30,7 @@ PANEL_BOTTOM    = 340         # bottom of the two side-by-side panels
 PANEL_DIV_X     = W // 2     # x-coord of the vertical panel divider
 
 CHART_ZONE_TOP  = PANEL_BOTTOM + 5   # top of the entire chart zone
-CHART_MONTH_Y   = CHART_ZONE_TOP + 2 # y for month labels
+CHART_MONTH_Y   = CHART_ZONE_TOP + 10 # y for month labels (inside box border)
 CHART_ORIGIN_Y  = CHART_MONTH_Y + 15 # y where cells start
 
 # Centre the 52-week grid (with a left gap for day labels)
@@ -188,12 +188,29 @@ def _draw_header(
     db.line([(0, HEADER_H), (W - 1, HEADER_H)], fill=0, width=1)
 
 
+PANEL_MARGIN = 4   # gap between display edge and panel box
+PANEL_HEAD_H = 22  # height of the filled black panel header bar
+
 def _draw_dividers(ib: Image.Image) -> None:
     db = ImageDraw.Draw(ib)
-    # Vertical divider between panels
-    db.line([(PANEL_DIV_X, PANEL_TOP), (PANEL_DIV_X, PANEL_BOTTOM)], fill=0, width=1)
-    # Horizontal divider above chart
-    db.line([(0, PANEL_BOTTOM + 3), (W - 1, PANEL_BOTTOM + 3)], fill=0, width=1)
+    # Left panel box
+    db.rectangle(
+        [PANEL_MARGIN, PANEL_TOP,
+         PANEL_DIV_X - PANEL_MARGIN, PANEL_BOTTOM],
+        outline=0, width=2,
+    )
+    # Right panel box
+    db.rectangle(
+        [PANEL_DIV_X + PANEL_MARGIN, PANEL_TOP,
+         W - PANEL_MARGIN, PANEL_BOTTOM],
+        outline=0, width=2,
+    )
+    # Chart zone box
+    db.rectangle(
+        [PANEL_MARGIN, PANEL_BOTTOM + 6,
+         W - PANEL_MARGIN, H - PANEL_MARGIN],
+        outline=0, width=2,
+    )
 
 
 def _draw_repo_panel(
@@ -204,15 +221,16 @@ def _draw_repo_panel(
     db = ImageDraw.Draw(ib)
     dr = ImageDraw.Draw(ir)
 
-    x0, x1 = 8, PANEL_DIV_X - 8   # panel left/right bounds
+    x0, x1 = PANEL_MARGIN + 2, PANEL_DIV_X - PANEL_MARGIN - 2
     pw = x1 - x0
 
-    # Panel heading
-    db.text((x0, PANEL_TOP + 3), "RECENT REPOS", font=fonts["heading"], fill=0)
-    db.line([(x0, PANEL_TOP + 19), (x1, PANEL_TOP + 19)], fill=0, width=1)
+    # Filled black header bar + white label
+    bar_y0, bar_y1 = PANEL_TOP + 2, PANEL_TOP + PANEL_HEAD_H
+    db.rectangle([x0, bar_y0, x1, bar_y1], fill=0)
+    db.text((x0 + 6, bar_y0 + 4), "RECENT REPOS", font=fonts["heading"], fill=255)
 
     # Row layout
-    y0       = PANEL_TOP + 24
+    y0       = PANEL_TOP + PANEL_HEAD_H + 4
     avail_h  = PANEL_BOTTOM - y0 - 4
     row_h    = min(avail_h // max(len(repos), 1), 44)
     item_y   = y0
@@ -267,14 +285,15 @@ def _draw_feed_panel(
     """Right panel: activity feed."""
     db = ImageDraw.Draw(ib)
 
-    x0, x1 = PANEL_DIV_X + 8, W - 8
+    x0, x1 = PANEL_DIV_X + PANEL_MARGIN + 2, W - PANEL_MARGIN - 2
     pw = x1 - x0
 
-    # Panel heading
-    db.text((x0, PANEL_TOP + 3), "ACTIVITY FEED", font=fonts["heading"], fill=0)
-    db.line([(x0, PANEL_TOP + 19), (x1, PANEL_TOP + 19)], fill=0, width=1)
+    # Filled black header bar + white label
+    bar_y0, bar_y1 = PANEL_TOP + 2, PANEL_TOP + PANEL_HEAD_H
+    db.rectangle([x0, bar_y0, x1, bar_y1], fill=0)
+    db.text((x0 + 6, bar_y0 + 4), "ACTIVITY FEED", font=fonts["heading"], fill=255)
 
-    y0      = PANEL_TOP + 24
+    y0      = PANEL_TOP + PANEL_HEAD_H + 4
     avail_h = PANEL_BOTTOM - y0 - 4
     row_h   = min(avail_h // max(len(feed), 1), 44)
     item_y  = y0
