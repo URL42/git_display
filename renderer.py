@@ -232,9 +232,8 @@ def _draw_repo_panel(
         tag_x   = x1 - tag_w
         tag_y   = item_y + 1
         tag_h   = 13
-        # Red pill background
-        dr.rounded_rectangle([tag_x, tag_y, tag_x + tag_w, tag_y + tag_h],
-                              radius=3, fill=0)
+        # Red tag background (rectangle — rounded_rectangle requires Pillow 8.2+)
+        dr.rectangle([tag_x, tag_y, tag_x + tag_w, tag_y + tag_h], fill=0)
         # White text (255 on both layers where text pixels land)
         dr.text((tag_x + tag_pad, tag_y + 1), lang, font=fonts["tiny"], fill=255)
 
