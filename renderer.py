@@ -85,10 +85,13 @@ def _build_patches() -> None:
         elif lvl == 4:
             b[:] = 0                   # solid black
 
-        _CELL_PATCHES[lvl] = (
-            Image.fromarray(b, mode="L"),
-            Image.fromarray(r, mode="L"),
-        )
+        # Draw 1px black border on the black layer patch
+        b_img = Image.fromarray(b, mode="L")
+        r_img = Image.fromarray(r, mode="L")
+        bd    = ImageDraw.Draw(b_img)
+        bd.rectangle([0, 0, CELL_SIZE - 1, CELL_SIZE - 1], outline=0, width=1)
+
+        _CELL_PATCHES[lvl] = (b_img, r_img)
 
 _build_patches()
 
