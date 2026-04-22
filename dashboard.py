@@ -78,6 +78,7 @@ def _display_update(epd, img_black, img_red) -> None:
     """
     log.info("Display: init")
     epd.init()
+    time.sleep(1)   # settle time — some BWR panels need this after waking from sleep
 
     log.info("Display: writing buffers")
     epd.display(epd.getbuffer(img_black), epd.getbuffer(img_red))
@@ -134,6 +135,7 @@ def main() -> None:
     epd.Clear()
     epd.sleep()
     log.info("Display cleared.")
+    time.sleep(2)   # let panel settle after boot clear before first write
 
     # ── Refresh loop ───────────────────────────────────────────────────────
     while True:
