@@ -46,17 +46,17 @@ LEGEND_Y        = CHART_ORIGIN_Y + 7 * STEP + 8
 # ─── Dither patterns for levels 1 & 2 ────────────────────────────────────────
 # 4×4 tile; True = place an ink pixel. Tiled across the cell area.
 _DITHER = {
-    1: np.array([
+    1: np.array([          # ~33% — light but clearly visible
         [1, 0, 0, 0],
-        [0, 0, 0, 0],
         [0, 0, 1, 0],
-        [0, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 0, 1],
     ], dtype=bool),
-    2: np.array([
-        [1, 0, 1, 0],
-        [0, 1, 0, 1],
-        [1, 0, 1, 0],
-        [0, 1, 0, 1],
+    2: np.array([          # ~67% — clearly denser than level 1
+        [1, 0, 1, 1],
+        [1, 1, 0, 1],
+        [0, 1, 1, 0],
+        [1, 1, 0, 1],
     ], dtype=bool),
 }
 
