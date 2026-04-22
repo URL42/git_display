@@ -208,12 +208,7 @@ def _draw_dividers(ib: Image.Image) -> None:
          W - PANEL_MARGIN, PANEL_BOTTOM],
         outline=0, width=2,
     )
-    # Chart zone box
-    db.rectangle(
-        [PANEL_MARGIN, PANEL_BOTTOM + 6,
-         W - PANEL_MARGIN, H - PANEL_MARGIN],
-        outline=0, width=2,
-    )
+    # (no box around chart zone — cleaner without it)
 
 
 def _draw_repo_panel(
