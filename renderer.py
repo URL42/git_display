@@ -46,17 +46,17 @@ LEGEND_Y        = CHART_ORIGIN_Y + 7 * STEP + 8
 # ─── Dither patterns for levels 1 & 2 ────────────────────────────────────────
 # 4×4 tile; True = place an ink pixel. Tiled across the cell area.
 _DITHER = {
-    1: np.array([          # ~33% — light but clearly visible
-        [1, 0, 0, 0],
-        [0, 0, 1, 0],
-        [0, 1, 0, 0],
-        [0, 0, 0, 1],
+    1: np.array([          # ~50% checkerboard — clearly visible
+        [1, 0, 1, 0],
+        [0, 1, 0, 1],
+        [1, 0, 1, 0],
+        [0, 1, 0, 1],
     ], dtype=bool),
-    2: np.array([          # ~67% — clearly denser than level 1
+    2: np.array([          # ~85% — heavy, close to solid
+        [1, 1, 1, 0],
+        [1, 1, 0, 1],
         [1, 0, 1, 1],
-        [1, 1, 0, 1],
-        [0, 1, 1, 0],
-        [1, 1, 0, 1],
+        [0, 1, 1, 1],
     ], dtype=bool),
 }
 
@@ -200,13 +200,13 @@ def _draw_dividers(ib: Image.Image) -> None:
     db.rectangle(
         [PANEL_MARGIN, PANEL_TOP,
          PANEL_DIV_X - PANEL_MARGIN, PANEL_BOTTOM],
-        outline=0, width=2,
+        outline=0, width=3,
     )
     # Right panel box
     db.rectangle(
         [PANEL_DIV_X + PANEL_MARGIN, PANEL_TOP,
          W - PANEL_MARGIN, PANEL_BOTTOM],
-        outline=0, width=2,
+        outline=0, width=3,
     )
     # (no box around chart zone — cleaner without it)
 
@@ -272,7 +272,7 @@ def _draw_repo_panel(
 
         # ── Row separator ─────────────────────────────────────────────
         sep_y = item_y + row_h - 1
-        db.line([(x0, sep_y), (x1, sep_y)], fill=0, width=1)
+        db.line([(x0, sep_y), (x1, sep_y)], fill=0, width=2)
         item_y += row_h
 
 
@@ -318,7 +318,7 @@ def _draw_feed_panel(
             db.text((x0 + 2, item_y + 28), full, font=fonts["tiny"], fill=0)
 
         sep_y = item_y + row_h - 1
-        db.line([(x0, sep_y), (x1, sep_y)], fill=0, width=1)
+        db.line([(x0, sep_y), (x1, sep_y)], fill=0, width=2)
         item_y += row_h
 
 
