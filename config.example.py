@@ -1,13 +1,6 @@
-# config.py — copy this file to config.py and fill in your values
-#
-#   cp config.example.py config.py
-#   nano config.py
-#
-# config.py is gitignored and will never be committed.
-
 # ─── GitHub credentials ────────────────────────────────────────────────────────
 # Create a token at: https://github.com/settings/tokens
-# Required scopes: read:user, repo (for private repos)
+# Required scopes: read:user, repo (for private repos), read:org (optional)
 GITHUB_TOKEN    = "ghp_your_token_here"
 GITHUB_USERNAME = "your_username_here"
 
@@ -28,8 +21,8 @@ ROTATE_180 = False
 # ─── Contribution level thresholds ─────────────────────────────────────────────
 # Adjust to your commit frequency. These control the 5-level color gradient.
 # [0] = no commits, [1-4] = progressively more commits
-CONTRIB_THRESHOLDS = [0, 2, 5, 9]  # up to [n] = level N
+CONTRIB_THRESHOLDS = [0, 1, 3, 6]  # up to [n] = level N
 
 # ─── Panel content limits ──────────────────────────────────────────────────────
-REPOS_LIMIT = 7
-FEED_LIMIT  = 7
+REPOS_LIMIT = 7   # max repos to show
+FEED_LIMIT  = 7   # max feed events to show
