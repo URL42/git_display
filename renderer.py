@@ -174,22 +174,22 @@ def _draw_header(
     # Solid red background on the red layer
     dr.rectangle([0, 0, W - 1, HEADER_H - 1], fill=0)
 
-    # Left: "github / username"  (black text on red = bold and crisp)
-    db.text((10, (HEADER_H - _tw(fonts["title"], "A")) // 2 - 1),
-            f"github / {username}", font=fonts["title"], fill=0)
+    # Left: "github / username"  (white text on red = 255 on red layer)
+    dr.text((10, (HEADER_H - _tw(fonts["title"], "A")) // 2 - 1),
+            f"github / {username}", font=fonts["title"], fill=255)
 
     # Centre: contribution count
     centre_text = f"{total:,} contributions this year"
-    cx = (W - _tw(fonts["body"], centre_text)) // 2
-    db.text((cx, (HEADER_H - 10) // 2 + 1), centre_text, font=fonts["body"], fill=0)
+    cx = (W - _tw(fonts["small"], centre_text)) // 2
+    dr.text((cx, (HEADER_H - 10) // 2 + 1), centre_text, font=fonts["small"], fill=255)
 
     # Right: last-updated timestamp
     ts   = datetime.now().strftime("%-H:%M")
     ts_w = _tw(fonts["small"], ts)
-    db.text((W - ts_w - 10, (HEADER_H - 10) // 2 + 1), ts, font=fonts["small"], fill=0)
+    dr.text((W - ts_w - 10, (HEADER_H - 10) // 2 + 1), ts, font=fonts["small"], fill=255)
 
-    # Bold border around header
-    db.rectangle([0, 0, W - 1, HEADER_H], outline=0, width=2)
+    # Bottom border of header
+    db.line([(0, HEADER_H), (W - 1, HEADER_H)], fill=0, width=1)
 
 
 PANEL_MARGIN = 4   # gap between display edge and panel box
@@ -239,8 +239,8 @@ def _draw_repo_panel(
             break
 
         # ── Repo name ───────────────────────────────────────────────
-        name = _trunc(repo["name"], fonts["heading"], pw - 120)
-        db.text((x0, item_y + 1), name, font=fonts["heading"], fill=0)
+        name = _trunc(repo["name"], fonts["body"], pw - 120)
+        db.text((x0, item_y + 1), name, font=fonts["body"], fill=0)
 
         # ── Language tag (red pill) ──────────────────────────────────
         lang    = (repo["language"] or "—")[:8]
@@ -302,8 +302,8 @@ def _draw_feed_panel(
             break
 
         # ── Repo name (left) + relative time (right) ─────────────────
-        repo_short = _trunc(event["repo_short"], fonts["heading"], pw - 60)
-        db.text((x0, item_y + 1), repo_short, font=fonts["heading"], fill=0)
+        repo_short = _trunc(event["repo_short"], fonts["body"], pw - 60)
+        db.text((x0, item_y + 1), repo_short, font=fonts["body"], fill=0)
 
         t   = relative_time(event["created_at"])
         t_x = x1 - _tw(fonts["tiny"], t)
