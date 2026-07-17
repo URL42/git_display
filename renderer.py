@@ -23,6 +23,18 @@ from config import CONTRIB_THRESHOLDS, ROTATE_180
 # ─── Display dimensions ────────────────────────────────────────────────────────
 W, H = 800, 480
 
+
+def _aliased_draw(img: Image.Image) -> ImageDraw.ImageDraw:
+    """
+    ImageDraw context with anti-aliasing DISABLED (fontmode '1').
+    E-paper is 1-bit per layer: anti-aliased grey pixels get dithered into
+    sparse dots by getbuffer(), making small text look faint and fuzzy.
+    Binary rendering keeps every glyph stroke pure black.
+    """
+    d = ImageDraw.Draw(img)
+    d.fontmode = "1"
+    return d
+
 # ─── Layout zones (all in pixels) ─────────────────────────────────────────────
 HEADER_H        = 36          # height of the top red header bar
 PANEL_TOP       = HEADER_H + 2
@@ -89,7 +101,7 @@ def _build_patches() -> None:
         # Draw 1px black border on the black layer patch
         b_img = Image.fromarray(b, mode="L")
         r_img = Image.fromarray(r, mode="L")
-        bd    = ImageDraw.Draw(b_img)
+        bd    = _aliased_draw(b_img)
         bd.rectangle([0, 0, CELL_SIZE - 1, CELL_SIZE - 1], outline=0, width=1)
 
         _CELL_PATCHES[lvl] = (b_img, r_img)
@@ -168,8 +180,8 @@ def _draw_header(
     fonts: dict,
 ) -> None:
     """Full-width red header bar with username, contribution total, timestamp."""
-    db = ImageDraw.Draw(ib)
-    dr = ImageDraw.Draw(ir)
+    db = _aliased_draw(ib)
+    dr = _aliased_draw(ir)
 
     # Solid red background on the red layer
     dr.rectangle([0, 0, W - 1, HEADER_H - 1], fill=0)
@@ -196,7 +208,7 @@ PANEL_MARGIN = 4   # gap between display edge and panel box
 PANEL_HEAD_H = 22  # height of the filled black panel header bar
 
 def _draw_dividers(ib: Image.Image) -> None:
-    db = ImageDraw.Draw(ib)
+    db = _aliased_draw(ib)
     # Left panel box
     db.rectangle(
         [PANEL_MARGIN, PANEL_TOP,
@@ -217,8 +229,8 @@ def _draw_repo_panel(
     repos: list, fonts: dict,
 ) -> None:
     """Left panel: recent repositories."""
-    db = ImageDraw.Draw(ib)
-    dr = ImageDraw.Draw(ir)
+    db = _aliased_draw(ib)
+    dr = _aliased_draw(ir)
 
     x0, x1 = PANEL_MARGIN + 2, PANEL_DIV_X - PANEL_MARGIN - 2
     pw = x1 - x0
@@ -282,7 +294,7 @@ def _draw_feed_panel(
     feed: list, fonts: dict,
 ) -> None:
     """Right panel: activity feed."""
-    db = ImageDraw.Draw(ib)
+    db = _aliased_draw(ib)
 
     x0, x1 = PANEL_DIV_X + PANEL_MARGIN + 2, W - PANEL_MARGIN - 2
     pw = x1 - x0
@@ -328,8 +340,8 @@ def _draw_chart(
     weeks: list, fonts: dict,
 ) -> None:
     """Contribution calendar grid with month labels, day labels, and legend."""
-    db = ImageDraw.Draw(ib)
-    dr = ImageDraw.Draw(ir)
+    db = _aliased_draw(ib)
+    dr = _aliased_draw(ir)
 
     ox = CHART_ORIGIN_X
     oy = CHART_ORIGIN_Y
