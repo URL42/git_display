@@ -133,11 +133,13 @@ def _load_fonts() -> dict[str, ImageFont.ImageFont]:
         return ImageFont.load_default()
 
     return {
-        "title":   load(bold_paths, 17),
-        "heading": load(bold_paths, 13),
-        "body":    load(sans_paths, 13),
-        "small":   load(sans_paths, 11),
-        "tiny":    load(sans_paths, 10),
+        "title":     load(bold_paths, 17),
+        "heading":   load(bold_paths, 13),
+        "body":      load(sans_paths, 13),
+        "body_bold": load(bold_paths, 13),   # same size, double-width strokes
+        "small":     load(sans_paths, 11),
+        "tiny":      load(sans_paths, 10),
+        "tiny_bold": load(bold_paths, 10),   # same size, double-width strokes
     }
 
 
@@ -251,8 +253,8 @@ def _draw_repo_panel(
             break
 
         # ── Repo name ───────────────────────────────────────────────
-        name = _trunc(repo["name"], fonts["body"], pw - 120)
-        db.text((x0, item_y + 1), name, font=fonts["body"], fill=0)
+        name = _trunc(repo["name"], fonts["body_bold"], pw - 120)
+        db.text((x0, item_y + 1), name, font=fonts["body_bold"], fill=0)
 
         # ── Language tag (red pill) ──────────────────────────────────
         lang    = (repo["language"] or "—")[:8]
@@ -268,20 +270,20 @@ def _draw_repo_panel(
 
         # ── Star count ───────────────────────────────────────────────
         stars   = f"★ {repo['stars']}"
-        star_x  = tag_x - _tw(fonts["small"], stars) - 8
-        db.text((int(star_x), item_y + 2), stars, font=fonts["small"], fill=0)
+        star_x  = tag_x - _tw(fonts["tiny_bold"], stars) - 8
+        db.text((int(star_x), item_y + 2), stars, font=fonts["tiny_bold"], fill=0)
 
         # ── Description (line 2) ─────────────────────────────────────
         desc = repo.get("description", "")
         if desc and row_h >= 30:
-            desc = _trunc(desc, fonts["tiny"], pw - 4)
-            db.text((x0 + 2, item_y + 16), desc, font=fonts["tiny"], fill=0)
+            desc = _trunc(desc, fonts["tiny_bold"], pw - 4)
+            db.text((x0 + 2, item_y + 16), desc, font=fonts["tiny_bold"], fill=0)
 
         # ── Pushed timestamp (line 3) ─────────────────────────────────
         if row_h >= 40:
             pushed = relative_time(repo["pushed_at"])
             db.text((x0 + 2, item_y + 28), f"pushed {pushed}",
-                    font=fonts["tiny"], fill=0)
+                    font=fonts["tiny_bold"], fill=0)
 
         # ── Row separator ─────────────────────────────────────────────
         sep_y = item_y + row_h - 1
@@ -314,21 +316,21 @@ def _draw_feed_panel(
             break
 
         # ── Repo name (left) + relative time (right) ─────────────────
-        repo_short = _trunc(event["repo_short"], fonts["body"], pw - 60)
-        db.text((x0, item_y + 1), repo_short, font=fonts["body"], fill=0)
+        repo_short = _trunc(event["repo_short"], fonts["body_bold"], pw - 60)
+        db.text((x0, item_y + 1), repo_short, font=fonts["body_bold"], fill=0)
 
         t   = relative_time(event["created_at"])
-        t_x = x1 - _tw(fonts["tiny"], t)
-        db.text((int(t_x), item_y + 3), t, font=fonts["tiny"], fill=0)
+        t_x = x1 - _tw(fonts["tiny_bold"], t)
+        db.text((int(t_x), item_y + 3), t, font=fonts["tiny_bold"], fill=0)
 
         # ── Event description (line 2) ────────────────────────────────
-        desc = _trunc(event["description"] or "", fonts["tiny"], pw - 4)
-        db.text((x0 + 2, item_y + 16), desc, font=fonts["tiny"], fill=0)
+        desc = _trunc(event["description"] or "", fonts["tiny_bold"], pw - 4)
+        db.text((x0 + 2, item_y + 16), desc, font=fonts["tiny_bold"], fill=0)
 
         # ── Full repo path (line 3, dimmer with tiny font) ────────────
         if row_h >= 40:
-            full = _trunc(event["repo"], fonts["tiny"], pw - 4)
-            db.text((x0 + 2, item_y + 28), full, font=fonts["tiny"], fill=0)
+            full = _trunc(event["repo"], fonts["tiny_bold"], pw - 4)
+            db.text((x0 + 2, item_y + 28), full, font=fonts["tiny_bold"], fill=0)
 
         sep_y = item_y + row_h - 1
         db.line([(x0, sep_y), (x1, sep_y)], fill=0, width=2)
