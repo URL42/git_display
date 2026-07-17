@@ -14,6 +14,7 @@ Run with:  python3 dashboard.py
 Or as a systemd service — see github-dashboard.service
 """
 
+import fcntl
 import hashlib
 import importlib
 import logging
@@ -76,14 +77,18 @@ def _display_update(epd, img_black, img_red) -> None:
     We reinitialise before every write rather than keeping the display
     powered between refreshes. sleep() reduces current draw to ~10 µA.
     """
+    # Sequence matches Waveshare's epd_7in5b_V2_test.py demo exactly:
+    #   init → Clear → display → settle → sleep
     log.info("Display: init")
     epd.init()
-    time.sleep(1)   # first init wakes the controller from deep sleep
-    epd.init()      # second init ensures panel is fully ready to accept data
-    time.sleep(1)
+
+    log.info("Display: clear")
+    epd.Clear()
 
     log.info("Display: writing buffers")
     epd.display(epd.getbuffer(img_black), epd.getbuffer(img_red))
+
+    time.sleep(2)   # settle, as in the demo
 
     log.info("Display: sleeping")
     epd.sleep()
@@ -117,7 +122,23 @@ def _fetch(client: GitHubClient) -> dict:
 
 
 # ─── Main loop ────────────────────────────────────────────────────────────────
+LOCK_PATH = "/tmp/github-dashboard.lock"
+
+def _acquire_lock():
+    """Prevent two instances from fighting over the SPI bus / display."""
+    lock_file = open(LOCK_PATH, "w")
+    try:
+        fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        log.critical("Another instance is already running (lock: %s).", LOCK_PATH)
+        log.critical("If the systemd service is active, stop it first:")
+        log.critical("  sudo systemctl stop github-dashboard")
+        sys.exit(1)
+    return lock_file   # keep reference alive for process lifetime
+
+
 def main() -> None:
+    _lock = _acquire_lock()
     log.info("══════════════════════════════════════════")
     log.info("  GitHub e-paper dashboard  starting")
     log.info("  User:    @%s", GITHUB_USERNAME)
