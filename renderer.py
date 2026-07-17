@@ -210,20 +210,16 @@ PANEL_MARGIN = 4   # gap between display edge and panel box
 PANEL_HEAD_H = 22  # height of the filled black panel header bar
 
 def _draw_dividers(ib: Image.Image) -> None:
+    # CROSSTALK TEST: no vertical borders.
+    # Long unbroken vertical black lines load their entire pixel column and
+    # cause vertical banding artifacts that smear through the red header and
+    # panel bars above/below. Horizontal separation only:
     db = _aliased_draw(ib)
-    # Left panel box
-    db.rectangle(
-        [PANEL_MARGIN, PANEL_TOP,
-         PANEL_DIV_X - PANEL_MARGIN, PANEL_BOTTOM],
-        outline=0, width=3,
-    )
-    # Right panel box
-    db.rectangle(
-        [PANEL_DIV_X + PANEL_MARGIN, PANEL_TOP,
-         W - PANEL_MARGIN, PANEL_BOTTOM],
-        outline=0, width=3,
-    )
-    # (no box around chart zone — cleaner without it)
+    # Bottom rule under each panel
+    db.line([(PANEL_MARGIN, PANEL_BOTTOM), (PANEL_DIV_X - PANEL_MARGIN, PANEL_BOTTOM)],
+            fill=0, width=2)
+    db.line([(PANEL_DIV_X + PANEL_MARGIN, PANEL_BOTTOM), (W - PANEL_MARGIN, PANEL_BOTTOM)],
+            fill=0, width=2)
 
 
 def _draw_repo_panel(
